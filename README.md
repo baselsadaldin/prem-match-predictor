@@ -1,6 +1,6 @@
 # Premier League Match Predictor
 
-A Premier League match predictor (home win, draw or away win) built with Claude Code, which writes and runs the code.
+A Premier League match predictor (home win, draw or away win) built with Claude Code.
 
 ## Milestones
 
