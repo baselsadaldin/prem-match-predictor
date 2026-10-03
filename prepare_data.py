@@ -196,9 +196,12 @@ def add_form_features(matches, window=FORM_WINDOW):
         # ...then shift(1) so each match sees only the value from before it.
         teams[stat] = upto.reindex(teams.index).groupby(keys).shift(1).groupby(keys).ffill()
 
-    promoted_train = teams["Promoted"] & teams["Split"].eq("train")
-    fill_values = teams.loc[promoted_train, FORM_STATS].mean()
+    # Fixed prior from the unscored history season, never later training results.
+    history = teams.loc[teams["Season"].isin(HISTORY_SEASONS)]
+    fill_values = history[FORM_STATS].mean()
     no_history = teams.groupby(["Team", "Spell"]).cumcount().eq(0) & teams["Promoted"]
+    if no_history.any() and fill_values.isna().any():
+        raise ValueError("Promoted-team form needs complete history-season priors")
     teams.loc[no_history, FORM_STATS] = fill_values.to_numpy()
 
     for side in ["Home", "Away"]:

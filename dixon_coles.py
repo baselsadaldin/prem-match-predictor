@@ -78,11 +78,19 @@ def fit_week(history_home, history_away, weights, alpha):
         adjustment = tau(home_goals, away_goals, mu_home, mu_away, rho)
         return -(weights * np.log(np.clip(adjustment, 1e-10, None))).sum()
 
-    rho = minimize_scalar(negative_log_likelihood, bounds=(-0.2, 0.2), method="bounded").x
+    # Keep all four low-score corrections positive for the fitted means.
+    lower = max(-0.2, float(np.max(-1 / mu_home)), float(np.max(-1 / mu_away)))
+    upper = min(0.2, float(np.min(1 / (mu_home * mu_away))))
+    rho = minimize_scalar(negative_log_likelihood, bounds=(lower + 1e-10, upper - 1e-10), method="bounded").x
     return model, teams, rho
 
 
 def outcome_probabilities(mu_home, mu_away, rho):
+    # New fixtures can have more extreme means than the fitted fixtures.
+    # Constrain rho to valid low-score corrections for each forecast separately.
+    lower = np.maximum(-1 / mu_home, -1 / mu_away)
+    upper = np.minimum(1, 1 / (mu_home * mu_away))
+    rho = np.clip(rho, lower + 1e-10, upper - 1e-10)[:, None, None]
     goals = np.arange(MAX_GOALS + 1)
     home = poisson.pmf(goals[None, :], mu_home[:, None])
     away = poisson.pmf(goals[None, :], mu_away[:, None])

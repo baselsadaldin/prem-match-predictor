@@ -4,7 +4,8 @@ Every probability comes from the walk-forward setup in backtest.py: a season is 
 model trained only on earlier seasons. Each forecast time is matched with the odds available
 at that time:
 - before lineups: Football-Data's early Pinnacle odds (PSH/PSD/PSA, collected a day or more before kickoff)
-- after lineups: Pinnacle closing odds (PSCH/PSCD/PSCA), the nearest price to the T-60 min lineup forecast
+- after lineups: Pinnacle closing odds (PSCH/PSCD/PSCA), a retrospective benchmark;
+  these are not verified executable prices at the T-60 min lineup forecast
 
 Strategy: at most one flat 1-unit bet per match, on the outcome with the highest expected value,
 placed only if that expected value exceeds a threshold. The threshold is chosen on seasons
@@ -62,8 +63,10 @@ def walk_forward_probabilities(frame, features):
 
 def place_bets(matches, probabilities, odds_columns, threshold):
     """One flat 1-unit bet per match on the best-value outcome, if its expected value beats the threshold."""
+    if not matches.index.equals(probabilities.index):
+        raise ValueError("Match and probability rows must have the same index and order")
     prices = matches[odds_columns].to_numpy()
-    expected = probabilities.to_numpy() * prices - 1
+    expected = probabilities[OUTCOMES].to_numpy() * prices - 1
     choice = expected.argmax(axis=1)
     rows = np.arange(len(matches))
     best = expected[rows, choice]

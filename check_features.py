@@ -73,9 +73,23 @@ def check_promoted_restart(matches, featured):
     print(f"ok: promoted teams restart their form ({', '.join(promoted)})")
 
 
+def check_future_results_ignored(matches, featured):
+    """Later seasons must not influence earlier features, including newcomer priors."""
+    changed = matches.copy()
+    future = changed["Season"].ge("2223")
+    changed.loc[future, ["FTHG", "FTAG", "HS", "AS", "HST", "AST"]] = [9, 0, 30, 1, 20, 0]
+    refeatured = add_form_features(changed)
+    columns = [f"{side}{stat}Form" for side in ["Home", "Away"] for stat in FORM_STATS]
+    assert np.allclose(
+        featured.loc[~future, columns], refeatured.loc[~future, columns], equal_nan=True
+    )
+    print("ok: future results do not affect earlier form or promoted-team priors")
+
+
 if __name__ == "__main__":
     matches = load()
     featured = add_form_features(matches)
     check_form_by_hand(matches, featured)
     check_own_result_ignored(matches, featured)
     check_promoted_restart(matches, featured)
+    check_future_results_ignored(matches, featured)

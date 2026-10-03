@@ -20,7 +20,7 @@ def load_elo():
         ratings.to_csv(DATA_FILE, index=False)
 
     ratings.columns = ratings.columns.str.strip().str.lower()
-    required = {"date", "club", "elo"}
+    required = {"date", "club", "elo", "country"}
     missing = required - set(ratings.columns)
     if missing:
         raise ValueError(f"Missing expected columns: {sorted(missing)}")

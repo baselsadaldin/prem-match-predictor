@@ -1,11 +1,10 @@
 import pandas as pd
+from prepare_data import load_matches
 
-url = "https://www.football-data.co.uk/mmz4281/2425/E0.csv"
-matches = pd.read_csv(url)
+matches = load_matches("2425")
 columns = ["Date", "HomeTeam", "AwayTeam", "FTHG", "FTAG", "FTR"]
 
 
-matches["Date"] = pd.to_datetime(matches["Date"], dayfirst=True)
 matches = matches.sort_values("Date").reset_index(drop=True)
 
 split_date = pd.Timestamp("2025-01-01")

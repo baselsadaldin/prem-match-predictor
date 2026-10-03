@@ -12,6 +12,8 @@ A Premier League match predictor (home win, draw or away win) built with Claude 
 
 ## Results
 
+**Review correction:** the historical figures below were computed before fixing promoted-team form priors, which previously used later training-season results. Data preparation now uses only the unscored 2012/13 history season for these priors. Re-run the evaluation scripts before relying on these figures; feature choices remain historical choices, not newly validated conclusions. Closing odds are a retrospective benchmark, not verified prices available when lineups were announced.
+
 All five milestones are done; [FEATURE_PLAN.md](FEATURE_PLAN.md) has the full log. Every figure below is walk-forward: each season is predicted by a model trained only on earlier seasons.
 
 - **Model:** logistic regression on Elo difference and 5-match shot-xG form, plus starting-XI market value once lineups are known.

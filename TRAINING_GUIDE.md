@@ -15,8 +15,8 @@ Start with this data-loading step:
 ```python
 from prepare_data import load_training_data
 
-X_train, X_test, y_train, y_test = load_training_data()
-print(X_train.shape, X_test.shape)
+X_train, X_val, X_test, y_train, y_val, y_test = load_training_data(["EloDifference"])
+print(X_train.shape, X_val.shape, X_test.shape)
 print(y_train.value_counts())
 ```
 
@@ -29,8 +29,8 @@ The first model uses only `EloDifference = HomeElo - AwayElo`. A positive value 
 3. Calculate test accuracy and a confusion matrix with an explicit class order `["H", "D", "A"]`. Compare with both the majority class learned from `y_train` and your existing 50% strength-rule result on the same test rows. Improvement is an experiment, not a guarantee.
 4. Use `predict_proba` and inspect the classifier's `classes_` before labelling probability columns. Do not assume their order is H/D/A. Calculate log loss as well as accuracy: log loss evaluates how much probability the model assigns to the actual outcome, including whether wrong predictions are overconfident.
 
-Keep the January test period for final evaluation. If you want to choose settings, make an earlier chronological validation split within the 188 training matches; fit preprocessing on that earlier subset. Repeatedly adjusting settings to improve January-May results makes the test score optimistic.
+Use 2023/24 validation and walk-forward seasons through 2023/24 to choose settings. Keep the full 2024/25 test season for final evaluation. Fit preprocessing only on earlier training seasons. Repeatedly adjusting settings against test results makes the test score optimistic.
 
-Elo snapshots can update during the test period: each prediction represents a forecast made on that match's day using information already available then. This evaluates rolling pre-match forecasts, not forecasts for the whole season made on 1 January.
+Elo snapshots and form update during the test period: each prediction uses information available before that match. The fitted model stays fixed for each scored season. Promoted teams start with a fixed form prior from the unscored 2012/13 history season; subsequent form uses their earlier matches.
 
 Once you write the loading and fitting steps, ask for a review. We'll check the feature selection, fitting boundary, class ordering and evaluation before moving on to probabilities and calibration.
