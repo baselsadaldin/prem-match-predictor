@@ -12,15 +12,13 @@ A Premier League match predictor (home win, draw or away win) built with Claude 
 
 ## Results
 
-**Review correction:** the historical figures below were computed before fixing promoted-team form priors, which previously used later training-season results. Data preparation now uses only the unscored 2012/13 history season for these priors. Re-run the evaluation scripts before relying on these figures; feature choices remain historical choices, not newly validated conclusions. Closing odds are a retrospective benchmark, not verified prices available when lineups were announced.
-
 All five milestones are done; [FEATURE_PLAN.md](FEATURE_PLAN.md) has the full log. Every figure below is walk-forward: each season is predicted by a model trained only on earlier seasons.
 
 - **Model:** logistic regression on Elo difference and 5-match shot-xG form, plus starting-XI market value once lineups are known.
-- **Accuracy:** about 55.7% walk-forward over 2016/17–2023/24 (always picking home wins: about 45%).
+- **Accuracy:** about 55.6% walk-forward over 2016/17–2023/24 (always picking home wins: about 45%).
 - **Calibration:** good. Calibration error is about 0.015, against 0.017 for Pinnacle's odds.
 - **Against the market:** Pinnacle's odds predict better in every season, with log loss lower by 0.012 on average.
-- **Betting:** value betting against Pinnacle shows no edge in the Premier League or the Championship. Closing-line value is about −2%, and returns are within noise.
+- **Betting:** value betting against Pinnacle shows no edge in the Premier League or the Championship. Closing-line value is about −2%, and returns are within noise. Closing odds are a retrospective benchmark, not verified prices available when lineups were announced.
 - **Tried and not adopted:** points and goal-difference form, squad value, manager tenure, rest days, a Dixon-Coles goals model and temperature scaling.
 
 ## Setup
